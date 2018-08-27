@@ -1,0 +1,62 @@
+<div>
+  <h4>SimpleStore Contract</h4>
+
+  <hr />
+
+  <div class="row">
+    <div class="column column-60">
+      <label>Set Value</label>
+      <label>Contract Address</label>
+      <input [(ngModel)]="contractAddress" type="text"  />
+      <br>
+      <button (click)="deploy()">Deploy</button>
+      <button (click)="fromAddress()">Contract address</button>
+      <br />
+      <br />
+      <input [(ngModel)]="name" type="text" placeholder="i.e. Eli" />
+      <input [(ngModel)]="age" type="number" placeholder="i.e. 12" />
+
+      <button (click)="setValue()">Set Value</button>
+      <button (click)="getValue()">Get Value</button>
+      <br>
+      <br /><br />
+
+      <div class="response" [innerText]="response"></div>
+    </div>
+    <div class="column column-40">
+      <label>Bytecode</label>
+      <input [(ngModel)]="firstContractService.Bytecode" type="text" value="" />
+
+      <label>ABI</label>
+      <textarea [(ngModel)]="firstContractService.ABI"></textarea>
+
+      
+    </div>
+  </div>
+
+  <br />
+  <br />
+
+  <label>Solidity Code</label>
+
+  <pre>
+      <code>
+          pragma solidity ^0.4.18;
+
+          contract Coursetro &#123;
+              
+             string fName;
+             uint age;
+             
+             function setInstructor(string _fName, uint _age) public &#123;
+                 fName = _fName;
+                 age = _age;
+                 &#125;
+             
+             function getInstructor() public constant returns (string, uint) &#123;
+                 return (fName, age);
+                 &#125;
+          &#125;
+    </code>
+  </pre>
+</div>

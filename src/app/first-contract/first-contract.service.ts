@@ -1,0 +1,52 @@
+import { Injectable } from '@angular/core';
+import { Web3Service } from '../web3.service';
+
+@Injectable()
+export class FirstContractService {
+  Bytecode: string = '0x6060604052341561000f57600080fd5b6103058061001e6000396000f30060606040526004361061004c576000357c0100000000000000000000000000000000000000000000000000000000900463ffffffff16806322faf03a146100515780633c1b81a5146100b7575b600080fd5b341561005c57600080fd5b6100b5600480803590602001908201803590602001908080601f0160208091040260200160405190810160405280939291908181526020018383808284378201915050505050509190803590602001909190505061014c565b005b34156100c257600080fd5b6100ca61016e565b6040518080602001838152602001828103825284818151815260200191508051906020019080838360005b838110156101105780820151818401526020810190506100f5565b50505050905090810190601f16801561013d5780820380516001836020036101000a031916815260200191505b50935050505060405180910390f35b8160009080519060200190610162929190610220565b50806001819055505050565b6101766102a0565b600080600154818054600181600116156101000203166002900480601f0160208091040260200160405190810160405280929190818152602001828054600181600116156101000203166002900480156102115780601f106101e657610100808354040283529160200191610211565b820191906000526020600020905b8154815290600101906020018083116101f457829003601f168201915b50505050509150915091509091565b828054600181600116156101000203166002900490600052602060002090601f016020900481019282601f1061026157805160ff191683800117855561028f565b8280016001018555821561028f579182015b8281111561028e578251825591602001919060010190610273565b5b50905061029c91906102b4565b5090565b602060405190810160405280600081525090565b6102d691905b808211156102d25760008160009055506001016102ba565b5090565b905600a165627a7a72305820e37cbf6865f1e2d484033b7c87e16188a0ee7cb862f19187a79ea70c8687deb00029';
+  ABI: any = '[{"constant":false,"inputs":[{"name":"_fName","type":"string"},{"name":"_age","type":"uint256"}],"name":"setInstructor","outputs":[],"payable":false,"stateMutability":"nonpayable","type":"function"},{"constant":true,"inputs":[],"name":"getInstructor","outputs":[{"name":"","type":"string"},{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}]';
+  ContractInstance;
+  account: string;
+  web3:any;
+  constructor(public web3Service: Web3Service) {
+    this.web3=web3Service.web3;
+    web3Service.accounts((error, accounts) => {
+      this.account = accounts[0];
+
+    });
+  }
+
+  deploy(callback): any {  
+    let abi=JSON.parse(this.ABI);
+    let contractApi = this.web3.eth.contract(abi);
+    return   contractApi.new({
+      data: this.Bytecode,
+      from: this.account, 
+      gas: 4700000
+    },(err, contract) => {
+      if(err)  callback(err,contract);
+      else if(typeof contract.address !== 'undefined'){
+        callback(err,contract);
+        this.ContractInstance = contract;
+      }
+    });
+  }
+
+  fromAddress(address: string): void {
+    this.ContractInstance = this.web3.eth.contract(JSON.parse(this.ABI), { from: this.account, gasPrice: 300000 }).at(address);
+  }
+
+  getData(callback) {
+   /* var test  = this.ContractInstance.getInstructor.call().toString();
+    console.log(test)*/
+   this.ContractInstance.getInstructor(callback);
+  }
+
+  setData(name,age,callback) {
+    this.ContractInstance.setInstructor(name,age,{
+      from: this.account,
+      gas: 300000,
+      gasPrice: 30000000
+    },callback);
+  }
+}
